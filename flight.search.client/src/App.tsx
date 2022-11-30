@@ -2,59 +2,89 @@
 import "./App.css";
 import FlightListRound from "./Compartments/FlightListRound";
 import FlightList from "./Compartments/FlightList";
-import React, { useState, useEffect } from "react";
-import { useForm, SubmitHandler,Controller } from "react-hook-form";
-import { getValue } from "@testing-library/user-event/dist/utils";
-
+import  { useState,  } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 
 
 type SearchForm = {
-	DepartureDestination: string;
-	ArrivalDestination: string;
-	DepartureDate: Date;
-	RoundTrip: boolean;
-	RetrunDepartureDate: Date;
+	departureDestination: string;
+	arrivalDestination: string;
+	departureDate: Date;
+	roundTrip: boolean;
+	retrunDepartureDate: Date;
 };
 
 function App() {
-	const [RoundTripState, setRooundTripState] = useState(true);
-  const [Shown, setShown] = useState(true);
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<SearchForm>();
+	const [Shown, setShown] = useState(true);
+	const { register, handleSubmit } = useForm<SearchForm>();
 
-  
-	const onSubmit: SubmitHandler<SearchForm> = (data) => console.log(data);
-	
+	const onSubmit: SubmitHandler<SearchForm> = (data) => {
+
+    const json = JSON.stringify(data);
+    const url =
+    fetch(`https://localhost:7288/api/Flights?`+ new URLSearchParams({json}) )
+          .then((response) => {
+            if(!response.ok)
+            {
+              throw new Error ('OhOh....')
+            }
+            return response.blob();
+          })
+          .then((response) => console.log(response))
+          ;
+    
+   
+
+  }
 
 	return (
 		<>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<label>
 					Departure:
-					<input type="text" defaultValue="" {...register("DepartureDestination", { required: true })} />
+					<input
+						type="text"
+						defaultValue=""
+						{...register("departureDestination", { required: true })}
+					/>
 				</label>
 				<label>
 					Destination:
-					<input type="text" defaultValue="" {...register("ArrivalDestination", { required: true })} />
+					<input
+						type="text"
+						defaultValue=""
+						{...register("arrivalDestination", { required: true })}
+					/>
 				</label>
 				<label>
 					Departure Date:
-					<input type="date" defaultValue="" {...register("DepartureDate", { required: true })}/>
+					<input
+						type="date"
+						defaultValue=""
+						{...register("departureDate", { required: true })}
+					/>
 				</label>
 				<label>
 					Round trip
-          <input type="checkbox" defaultValue="" {...register("RoundTrip", { 
-            onChange: (e) => {setShown(!Shown)}, 
-              required: false })}/>
-				</label>        
-				<label  hidden={Shown}>
+					<input
+						type="checkbox"
+						defaultValue=""
+						{...register("roundTrip", {
+							onChange: (e) => {
+								setShown(!Shown);
+							},
+							required: false,
+						})}
+					/>
+				</label>
+				<label hidden={Shown}>
 					Return date:
-					<input type="date"  {...register("RetrunDepartureDate", { required: false })} />
-				</label>       
-        <input type="submit"/>
+					<input
+						type="date"
+						{...register("retrunDepartureDate", { required: false })}
+					/>
+				</label>
+				<input type="submit" />
 			</form>
 			<FlightList />
 			<FlightListRound />
