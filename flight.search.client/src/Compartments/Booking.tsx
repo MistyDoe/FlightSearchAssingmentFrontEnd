@@ -4,9 +4,7 @@ function Booking() {
     return (
       <>
         <Confirmation/>
-      </>
-      
-     
+      </>  
     );
   }
   
