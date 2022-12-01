@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import "./App.css";
-import FlightListRound from "./Compartments/FlightListRound";
-import FlightList from "./Compartments/FlightList";
+import FlightListRound from "./Components/FlightListRound";
+import FlightList from "./Components/FlightList";
 import  { useState,  } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 
@@ -11,29 +11,34 @@ type SearchForm = {
 	arrivalDestination: string;
 	departureDate: Date;
 	roundTrip: boolean;
-	retrunDepartureDate: Date;
+	retrunDepartureDate?: Date;
 };
+
 
 function App() {
 	const [Shown, setShown] = useState(true);
 	const { register, handleSubmit } = useForm<SearchForm>();
 
 	const onSubmit: SubmitHandler<SearchForm> = (data) => {
-
-    const json = JSON.stringify(data);
-    const url =
-    fetch(`https://localhost:7288/api/Flights?`+ new URLSearchParams({json}) )
-          .then((response) => {
-            if(!response.ok)
-            {
-              throw new Error ('OhOh....')
-            }
-            return response.blob();
-          })
-          .then((response) => console.log(response))
-          ;
-    
+		var url = new URL("https://localhost:7288/api/Flights?")
+		if(!data.retrunDepartureDate)
+		{
+			delete data.retrunDepartureDate;
+		}	
+		console.log(Object.keys(data));
+		Object.keys(data).forEach(key => url.searchParams.append(key, data[key]))
+		fetch(url )
+			.then((response) => {
+				if(!response.ok)
+				{
+				throw new Error ('OhOh....')
+				}
+				return response.blob();
+			})
+			.then((response) => console.log(response))
+			;
    
+  
 
   }
 
