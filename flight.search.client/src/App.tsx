@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./App.css";
 import FlightListRound from "./Components/FlightListRound";
 import FlightList from "./Components/FlightList";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { render } from "@testing-library/react";
-import { type } from "@testing-library/user-event/dist/type";
 
 type SearchForm = {
 	departureDestination: string;
@@ -34,9 +31,7 @@ export type SearchResult = {
 	arrivalDestination: string;
 	roundTrip: boolean;
 	adults: number;
-
 	children: number;
-
 	retrunDepartureDate?: Date;
 	iteneraries: Array<Itenerary>;
 };
@@ -54,21 +49,17 @@ function App() {
 		}
 		Object.keys(data).forEach((key) => url.searchParams.append(key, data[key]));
 		fetch(url)
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error("OhOh....");
-			}
-			return response.json();
-		})
-		.then((result) => {
-			if(result !== undefined)
-			
-			setResult(result);
-		});
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("OhOh....");
+				}
+				return response.json();
+			})
+			.then((result) => {
+				if (result !== undefined) setResult(result);
+			});
 		setRoundTrip(data.roundTrip);
 	};
-	console.log(roundTrip);
-
 	return (
 		<>
 			<form onSubmit={handleSubmit(onSubmit)}>
@@ -96,18 +87,22 @@ function App() {
 						{...register("departureDate", { required: true })}
 					/>
 				</label>
-					<label> Adults
-						<input
-						type = "number"
-						defaultValue="1"
-						{...register("adults" ,{required:true} )}/>
-					</label> 
-					<label>
+				<label>
+					{" "}
+					Adults
 					<input
-						type = "number"
+						type="number"
+						defaultValue="1"
+						{...register("adults", { required: true })}
+					/>
+				</label>
+				<label>
+					<input
+						type="number"
 						defaultValue="0"
-						{...register("children" ,{required:true} )}/>
-					</label>
+						{...register("children", { required: true })}
+					/>
+				</label>
 				<label>
 					Round trip
 					<input
@@ -130,7 +125,7 @@ function App() {
 				</label>
 				<input type="submit" />
 			</form>
-			{roundTrip ?  <FlightListRound  {...result}/> : <FlightList  {...result} />}
+			{roundTrip ? <FlightListRound {...result} /> : <FlightList {...result} />}
 		</>
 	);
 }
