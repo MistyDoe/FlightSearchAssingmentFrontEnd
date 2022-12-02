@@ -1,5 +1,5 @@
 
-function DescriptionCard() {
+function DescriptionCard(props) {
     return (
       <>
         <DescriptionCard/>

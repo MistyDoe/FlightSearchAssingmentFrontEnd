@@ -11,28 +11,32 @@ type SearchForm = {
 	departureDestination: string;
 	arrivalDestination: string;
 	departureDate: Date;
+	adults: number;
+	children: number;
 	roundTrip: boolean;
 	retrunDepartureDate?: Date;
 };
-type Itenerary = {
+export type Itenerary = {
 	iteneraryID: string;
 	departureTime: Date;
 	arrivalTime: Date;
 	availableSeats: 0;
 	priceList: Array<prices>;
 };
-type prices = {
+export type prices = {
 	pricesId: string;
 	currency: string;
 	adultPrice: number;
 	childPrice: number;
 };
-type SearchResult = {
+export type SearchResult = {
 	departureDestination: string;
 	arrivalDestination: string;
 	roundTrip: boolean;
 	adults: number;
+
 	children: number;
+
 	retrunDepartureDate?: Date;
 	iteneraries: Array<Itenerary>;
 };
@@ -40,10 +44,7 @@ type SearchResult = {
 function App() {
 	const [Shown, setShown] = useState(true);
 	const { register, handleSubmit } = useForm<SearchForm>();
-	const [result, setResult] = useState<SearchResult>();
-	const [FlightShow, SetFlightShow] = useState(false);
-	const [FlightRoundShow, SetFlightRoundShow] = useState(false);
-	const [NoFlightShow, SetNoFlightShow] = useState(false);
+	const [result, setResult] = useState<SearchResult>(undefined);
 	const [roundTrip, setRoundTrip] = useState<Boolean>();
 
 	const onSubmit: SubmitHandler<SearchForm> = (data) => {
@@ -51,20 +52,22 @@ function App() {
 		if (!data.retrunDepartureDate) {
 			delete data.retrunDepartureDate;
 		}
-		setRoundTrip(data.roundTrip);
 		Object.keys(data).forEach((key) => url.searchParams.append(key, data[key]));
 		fetch(url)
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error("OhOh....");
-				}
-				return response.json();
-			})
-			.then((result) => {
-				setResult(result);
-			});
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("OhOh....");
+			}
+			return response.json();
+		})
+		.then((result) => {
+			if(result !== undefined)
+			
+			setResult(result);
+		});
+		setRoundTrip(data.roundTrip);
 	};
-	console.log(result);
+	console.log(roundTrip);
 
 	return (
 		<>
@@ -93,6 +96,18 @@ function App() {
 						{...register("departureDate", { required: true })}
 					/>
 				</label>
+					<label> Adults
+						<input
+						type = "number"
+						defaultValue="1"
+						{...register("adults" ,{required:true} )}/>
+					</label> 
+					<label>
+					<input
+						type = "number"
+						defaultValue="0"
+						{...register("children" ,{required:true} )}/>
+					</label>
 				<label>
 					Round trip
 					<input
@@ -115,7 +130,7 @@ function App() {
 				</label>
 				<input type="submit" />
 			</form>
-			{roundTrip ? <FlightList flightList = {result} /> : <FlightListRound flightList = {result} />}
+			{roundTrip ?  <FlightListRound  {...result}/> : <FlightList  {...result} />}
 		</>
 	);
 }

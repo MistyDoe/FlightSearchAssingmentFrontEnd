@@ -1,36 +1,37 @@
+import { useState } from "react";
+import Booking from "./Booking";
+import DescriptionCard from "./DescriptionCard";
 
 
-type Itenerary = {
-	iteneraryID: string;
-	departureTime: Date;
-	arrivalTime: Date;
-	availableSeats: 0;
-	priceList: Array<prices>;
-};
-type prices = {
-	pricesId: string;
-	currency: string;
-	adultPrice: number;
-	childPrice: number;
-};
-type Flights = {
-	departureDestination: string;
-	arrivalDestination: string;
-	roundTrip: boolean;
-	adults: number;
-	children: number;
-	retrunDepartureDate?: Date;
-	iteneraries: Array<Itenerary>;
 
+const FlightList = (results) => {
+  const[show, SetShow] = useState(true);
+const flight = {...results[0]}
 
-function FlightList() {
-    return (
-      <>
-        <p>FlightList</p>
-      </>
-      
-     
-    );
+function HandleShow(e){
+  e.prevenrDefault();
+  SetShow(!show);
+}
+
+console.log(flight)
+    if(!flight)
+    {
+      return(
+      <></>
+    )}else{
+      return (   
+        <>
+        <div> Departure from: {flight.departure}</div>
+        <div> Arival At: {flight.arrival}</div>
+        <div> Passengers </div>
+        <div> Adults: {flight.adults} </div>
+        <div> Childer: {flight.children} </div>
+        {flight.iteneraries?.map((it ) => (
+        <div onClick = {HandleShow}> Flight List <DescriptionCard  {...it}  hidden = {show}/></div>))}
+         
+        </> 
+      );
+    }
   }
   
   export default FlightList;
