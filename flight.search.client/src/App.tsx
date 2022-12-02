@@ -2,9 +2,10 @@
 import "./App.css";
 import FlightListRound from "./Components/FlightListRound";
 import FlightList from "./Components/FlightList";
-import  { useState,  } from "react";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-
+import { render } from "@testing-library/react";
+import { type } from "@testing-library/user-event/dist/type";
 
 type SearchForm = {
 	departureDestination: string;
@@ -13,34 +14,57 @@ type SearchForm = {
 	roundTrip: boolean;
 	retrunDepartureDate?: Date;
 };
-
+type Itenerary = {
+	iteneraryID: string;
+	departureTime: Date;
+	arrivalTime: Date;
+	availableSeats: 0;
+	priceList: Array<prices>;
+};
+type prices = {
+	pricesId: string;
+	currency: string;
+	adultPrice: number;
+	childPrice: number;
+};
+type SearchResult = {
+	departureDestination: string;
+	arrivalDestination: string;
+	roundTrip: boolean;
+	adults: number;
+	children: number;
+	retrunDepartureDate?: Date;
+	iteneraries: Array<Itenerary>;
+};
 
 function App() {
 	const [Shown, setShown] = useState(true);
 	const { register, handleSubmit } = useForm<SearchForm>();
+	const [result, setResult] = useState<SearchResult>();
+	const [FlightShow, SetFlightShow] = useState(false);
+	const [FlightRoundShow, SetFlightRoundShow] = useState(false);
+	const [NoFlightShow, SetNoFlightShow] = useState(false);
+	const [roundTrip, setRoundTrip] = useState<Boolean>();
 
 	const onSubmit: SubmitHandler<SearchForm> = (data) => {
-		var url = new URL("https://localhost:7288/api/Flights?")
-		if(!data.retrunDepartureDate)
-		{
+		var url = new URL("https://localhost:7288/api/Flights?");
+		if (!data.retrunDepartureDate) {
 			delete data.retrunDepartureDate;
-		}	
-		console.log(Object.keys(data));
-		Object.keys(data).forEach(key => url.searchParams.append(key, data[key]))
-		fetch(url )
+		}
+		setRoundTrip(data.roundTrip);
+		Object.keys(data).forEach((key) => url.searchParams.append(key, data[key]));
+		fetch(url)
 			.then((response) => {
-				if(!response.ok)
-				{
-				throw new Error ('OhOh....')
+				if (!response.ok) {
+					throw new Error("OhOh....");
 				}
-				return response.blob();
+				return response.json();
 			})
-			.then((response) => console.log(response))
-			;
-   
-  
-
-  }
+			.then((result) => {
+				setResult(result);
+			});
+	};
+	console.log(result);
 
 	return (
 		<>
@@ -91,8 +115,7 @@ function App() {
 				</label>
 				<input type="submit" />
 			</form>
-			<FlightList />
-			<FlightListRound />
+			{roundTrip ? <FlightList flightList = {result} /> : <FlightListRound flightList = {result} />}
 		</>
 	);
 }
